@@ -2,7 +2,7 @@
 
 <h2 align="center">Overview</h2>
 
-Splunk Enterprise serves as the central analytics engine of this SOC lab. Universal Forwarders (UF) are deployed on endpoints to securely ship logs to the indexer. This architecture ensures real-time visibility and high-fidelity telemetry across systems.
+Splunk Enterprise serves as the central analytics engine of this SOC lab. Universal Forwarders (UF) are deployed on endpoints to securely send logs to the indexer.
 
 ---
 
@@ -102,7 +102,7 @@ sourcetype = linux_secure
 
 ---
 
-<h2 align="center">Critical Troubleshooting Fixes</h2>
+<h2 align="center">Troubleshooting</h2>
 
 ### **A. Future Logs Time Zone Fix**
 
