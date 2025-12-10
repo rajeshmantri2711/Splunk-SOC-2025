@@ -44,20 +44,20 @@ Use these steps for Linux sensors (Debian/Ubuntu/Mint).
 
 Use these steps for Windows 10 endpoints.
 
-<h3 align="center">1. Install Npcap</h3>
+<h3>1. Install Npcap</h3>
 
 * Download Npcap from the nmap website.
 * Run the installer.
 * **Critical:** You must check the box "Install Npcap in WinPcap API-compatible Mode".
 * Suricata will fail to start without this.
 
-<h3 align="center">2. Install Suricata</h3>
+<h3>2. Install Suricata</h3>
 
 * Download the MSI installer from the Suricata website.
 * Install it to the default location:
     `C:\Program Files\Suricata\`
 
-<h3 align="center">3. Fix Configuration Paths</h3>
+<h3>3. Fix Configuration Paths</h3>
 
 Windows services can crash if paths are relative. You must use absolute paths.
 
@@ -91,11 +91,11 @@ The Windows Service is unstable with network drivers at boot. We use the Task Sc
     * **Security:** Run with highest privileges (Admin).
     * **User:** Run whether user is logged on or not.
 
-<h2 align="center">Rule Management</h2>
+<h2>Rule Management</h2>
 
 Suricata detects threats using signatures.
 
-<h3 align="center">Emerging Threats (ET) Open Ruleset</h3>
+<h3>Emerging Threats (ET) Open Ruleset</h3>
 
 This is the industry standard open-source ruleset. It detects C2, exploit kits, and phishing.
 
