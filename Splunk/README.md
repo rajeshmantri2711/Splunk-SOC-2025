@@ -30,7 +30,6 @@ sudo dpkg -i splunkforwarder.deb
 <h2 align="center">Configuration: Adding Monitors</h2>
 
 ## Splunk can monitor log sources in two ways.  
-This lab prioritizes **Method 2** (inputs.conf) for reliability.
 
 ---
 
