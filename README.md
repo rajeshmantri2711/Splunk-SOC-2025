@@ -48,6 +48,4 @@ A library of small, scripted tests used for validating specific detections like 
 
 <hr>
 
-<p align="center"><i>Project maintained for educational and research purposes.</i></p>
-<p align="center"><i>Future upates: add dashboard images and screenshots</i></p>
 
