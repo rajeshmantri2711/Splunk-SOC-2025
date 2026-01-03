@@ -116,61 +116,51 @@ TZ = Asia/Kolkata
 
 <h2 align="center">Search Processing Language (SPL) Library</h2>
 
----
+### Linux Sysmon Field Extractions and Normalization
 
-### **A. Unified Normalization Query**
+#### SPL Without Extraction
+```
+index=* sourcetype=linux_sysmon_xml EventID=1
+| rex field=_raw "<Data Name=\"Image\">(?<image>[^<]+)</Data>"
+| rex field=_raw "<Data Name=\"CommandLine\">(?<command>[^<]+)</Data>"
+| eval time=strftime(_time,"%Y-%m-%d %H:%M:%S")
+| table time host EventID image command
+```
+#### SPL With Extraction
+```
+index=* sourcetype=linux_sysmon_xml EventID=1
+| table _time host EventID image command
+```
 
-```spl
-index=main 
-| where _time < now() + 300
-| eval LogType=case(
-    match(sourcetype, "suricata"), "NETWORK (Suricata)", 
-    match(source, "Sysmon") OR match(sourcetype, "Sysmon") OR match(source, "syslog"), "ENDPOINT (Sysmon)", 
-    true(), "OTHER")
-| search LogType!="OTHER"
-| rex "\<Data Name=['\"]Image['\"]\>(?<WinImage>[^\<]+)"
-| rex "\<Data Name=['\"]CommandLine['\"]\>(?<WinCLI>[^\<]+)"
-| rex "process_name=(?<LinuxImage>\S+)"
-| rex "command_line=(?<LinuxCLI>.+)"
-| eval Image=coalesce(WinImage, LinuxImage, Image)
-| eval CommandLine=coalesce(WinCLI, LinuxCLI, CommandLine)
-| eval Activity_Description=case(
-    LogType=="ENDPOINT (Sysmon)", "PROCESS: " . coalesce(Image, "Unknown") . " || CMD: " . coalesce(CommandLine, "N/A"), 
-    LogType=="NETWORK (Suricata)", "ALERT: " . coalesce(alert_signature, "Unknown"), 
-    true(), "Unknown Activity")
-| table _time, LogType, host, Activity_Description
+#### Steps to Create Field Extractions in Splunk Web UI
+
+Create each field extraction separately using the following steps:
+
+1. Navigate to: ` Settings → Fields → Field Extractions → New `
+2. Destination app: search
+3. Apply to: sourcetype → `linux_sysmon_xml`
+4. Type: inline
+
+Field Extraction 1: EventID
+- Name: `linux_sysmon_EventID`
+- Extraction/Transformation:
+```
+<EventID>(?<EventID>\d+)</EventID>
+```
+
+Field Extraction 2: Image
+- Name:`linux_sysmon_Image`
+- Extraction/Transformation:
+```
+<Data Name="Image">(?<image>[^<]+)</Data>
+```
+Field Extraction 3: CommandLine
+- Name: `linux_sysmon_CommandLine`
+- Extraction/Transformation:
+```
+<Data Name="CommandLine">(?<command>[^<]+)</Data>
 ```
 
 ---
 
-### **B. Threat Hunting**
 
-```spl
-index=main source="*Sysmon*" EventCode=1 
-| where _time > relative_time(now(), "-60m")
-| rex "\<Data Name=['\"]Image['\"]\>(?<ExtractedImage>[^\<]+)" 
-| rex "\<Data Name=['\"]CommandLine['\"]\>(?<ExtractedCLI>[^\<]+)"
-| eval Image=coalesce(ExtractedImage, Image)
-| eval CommandLine=coalesce(ExtractedCLI, CommandLine)
-| eval CLI_Lower=lower(CommandLine)
-| eval Keywords=""
-| eval Keywords=if(match(CLI_Lower, "bypass|hidden|-enc"), mvappend(Keywords, "Obfuscation"), Keywords)
-| eval Keywords=if(match(CLI_Lower, "http:|https:|wget|curl"), mvappend(Keywords, "Web Request"), Keywords)
-| eval Keywords=if(match(CLI_Lower, "whoami|ipconfig|net user|systeminfo|sc query"), mvappend(Keywords, "Discovery"), Keywords)
-| eval Keywords=if(match(CLI_Lower, "\\\\temp\\\\|\\\\downloads\\\\|appdata"), mvappend(Keywords, "Suspicious Path"), Keywords)
-| table _time, Image, CommandLine, Keywords
-| sort -_time
-```
-
----
-
-### **C. Shell Activity Tracker**
-
-```spl
-index=main (source="*Sysmon*" OR sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational") EventCode=1 
-| rex "\<Data Name=['\"]Image['\"]\>(?<ExtractedImage>[^\<]+)" 
-| eval Image=coalesce(ExtractedImage, Image)
-| search Image="*powershell.exe*" OR Image="*cmd.exe*" OR Image="*pwsh*"
-| eval ShellType=if(match(Image, "cmd.exe"), "CMD", "PowerShell")
-| timechart count by ShellType
-```
