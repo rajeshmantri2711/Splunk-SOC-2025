@@ -5,6 +5,12 @@
 Splunk Enterprise serves as the central analytics engine of this SOC lab. Universal Forwarders (UF) are deployed on endpoints to securely send logs to the indexer.
 
 ---
+### Navigation
+- [Universal Forwarder Deployment](#universal-forwarder-deployment)
+- [Configuration: Adding Monitors](#configuration-adding-monitors)
+- [Troubleshooting](#troubleshooting)
+- [SPL Library](#search-processing-language-spl-library)
+- [Dashboard](#dashboard)
 
 <h2 align="center">Universal Forwarder Deployment</h2>
 
@@ -116,7 +122,17 @@ TZ = Asia/Kolkata
 
 <h2 align="center">Search Processing Language (SPL) Library</h2>
 
-### Linux Sysmon Field Extractions and Normalization
+### SPL for Normalized or Combined Showcase of logs
+```
+index=* ( sourcetype=linux_sysmon_xml OR sourcetype=XmlWinEventLog )
+| eval image=coalesce(Image, image)
+| eval command=coalesce(CommandLine, command)
+| where NOT like(image, "%Splunk%")
+| table _time host EventID image command
+```
+- [output](Normalized_output.png)
+
+### How to recreate it
 
 #### SPL Without Extraction
 ```
@@ -161,6 +177,7 @@ Field Extraction 3: CommandLine
 <Data Name="CommandLine">(?<command>[^<]+)</Data>
 ```
 
+### Dashboard
 ---
 
 
