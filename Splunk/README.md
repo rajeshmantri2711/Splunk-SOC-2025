@@ -129,7 +129,7 @@ index=* ( sourcetype=linux_sysmon_xml OR sourcetype=XmlWinEventLog )
 | eval command=coalesce(CommandLine, command)
 | table _time host EventID image command
 ```
-- [output](Normalized_output.png)
+- [output](Images/Normalized_output.png)
 
 ### How to recreate it
 
