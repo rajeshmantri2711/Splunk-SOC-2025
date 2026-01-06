@@ -127,7 +127,6 @@ TZ = Asia/Kolkata
 index=* ( sourcetype=linux_sysmon_xml OR sourcetype=XmlWinEventLog )
 | eval image=coalesce(Image, image)
 | eval command=coalesce(CommandLine, command)
-| where NOT like(image, "%Splunk%")
 | table _time host EventID image command
 ```
 - [output](Normalized_output.png)
