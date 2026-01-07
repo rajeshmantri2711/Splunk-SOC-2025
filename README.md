@@ -38,9 +38,6 @@ Installed on both Windows and Linux endpoints. It provides deep visibility into 
 **Role: Adversary Emulation (Red Teaming)**  
 An automated C2 framework used to simulate realistic attacks. It executes adversary profiles (e.g., Discovery, Hunter) to validate that the SOC pipeline correctly detects and alerts on malicious behavior mapped to the MITRE ATT&CK framework.
 
-### [ Velociraptor ](Velociraptor) 
-**Role: Digital Forensics & Incident Response (DFIR)**  
-A powerful forensic tool used for endpoint hunting and evidence collection. It supports targeted acquisition of artifacts such as MFT, Registry, and Event Logs, enabling deep investigation of incidents identified by the SIEM.
 
 ### Atomic Red Team
 **Role: Atomic Test Simulation**  
