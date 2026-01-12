@@ -1,0 +1,64 @@
+<!-- custom config take precaution -->
+
+<Sysmon schemaversion="4.81">
+  <EventFiltering>
+
+    <!-- ProcessCreate Events -->
+    <RuleGroup name="ProcessCreateRules" groupRelation="or">
+      <!-- Exclude noisy background processes -->
+      <ProcessCreate onmatch="exclude">
+        <Image condition="contains">splunkd</Image>
+        <CommandLine condition="contains">/opt/splunkforwarder</CommandLine>
+        <Image condition="contains">mintUpdate</Image>
+        <Image condition="contains">cinnamon</Image>
+        <Image condition="end with">/vmtoolsd</Image>
+        <CommandLine condition="contains">dbus-daemon</CommandLine>
+        <CommandLine condition="contains">apt.systemd.daily</CommandLine>
+        <CommandLine condition="contains">run-parts</CommandLine>
+      </ProcessCreate>
+
+      <!-- Include shell and scripting commands -->
+      <ProcessCreate onmatch="include">
+        <Rule name="T1059.004: Unix Shell" groupRelation="or">
+          <Image condition="end with">/bin/bash</Image>
+          <Image condition="end with">/bin/sh</Image>
+          <Image condition="end with">/bin/dash</Image>
+        </Rule>
+
+        <Rule name="T1105: Ingress Tool Transfer" groupRelation="or">
+          <Image condition="end with">wget</Image>
+          <Image condition="end with">curl</Image>
+        </Rule>
+
+        <Rule name="T1033: User Discovery">
+          <CommandLine condition="contains">whoami</CommandLine>
+          <CommandLine condition="contains">id</CommandLine>
+        </Rule>
+      </ProcessCreate>
+    </RuleGroup>
+
+    <!-- NetworkConnect Events (deduplicated per process) -->
+    <RuleGroup name="NetworkConnectRules" groupRelation="or">
+      <!-- Only include the first network connection per process -->
+      <NetworkConnect onmatch="include">
+        <Rule name="T1105: Ingress Tool Transfer" groupRelation="or">
+          <Image condition="end with">wget</Image>
+          <Image condition="end with">ssh</Image>
+          <Image condition="end with">curl</Image>
+        </Rule>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <!-- Optional FileCreate / ProcessTerminate -->
+    <RuleGroup name="FileAndTerminateRules" groupRelation="or">
+      <FileCreate onmatch="include">
+        <Rule name="T1053.003: Scheduled Task/Job - Cron">
+          <TargetFilename condition="begin with">/etc/cron</TargetFilename>
+        </Rule>
+      </FileCreate>
+
+      <ProcessTerminate onmatch="include"/>
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>
