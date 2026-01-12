@@ -23,7 +23,7 @@ We use the SwiftOnSecurity configuration. This is the industry standard. It filt
 1.  **Download Configuration**
     Run this in PowerShell as Administrator.
     ```powershell
-    Invoke-WebRequest -Uri "[https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml](https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml)" -OutFile "C:\Program Files\Sysmon\sysmonconfig.xml"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml" -OutFile "C:\Program Files\Sysmon\sysmonconfig.xml"
     ```
 
 2.  **Install Sysmon**
@@ -46,7 +46,7 @@ Sysmon for Linux uses eBPF to monitor the kernel. We use the MSTIC configuration
 
 1.  **Register Microsoft Repository**
     ```bash
-    wget -q [https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb](https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb) -O packages-microsoft-prod.deb
+    wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb
     sudo apt-get update
     ```
@@ -59,7 +59,7 @@ Sysmon for Linux uses eBPF to monitor the kernel. We use the MSTIC configuration
 3.  **Apply Configuration**
     Download and apply the config file.
     ```bash
-    wget [https://raw.githubusercontent.com/microsoft/MSTIC-Sysmon/main/linux/configs/main.xml](https://raw.githubusercontent.com/microsoft/MSTIC-Sysmon/main/linux/configs/main.xml) -O sysmonconfig.xml
+    wget https://raw.githubusercontent.com/microsoft/MSTIC-Sysmon/main/linux/configs/main.xml -O sysmonconfig.xml
     sudo sysmon -i sysmonconfig.xml
     ```
 
