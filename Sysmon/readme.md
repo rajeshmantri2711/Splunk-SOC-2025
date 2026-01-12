@@ -105,7 +105,8 @@ Add this to `/opt/splunkforwarder/etc/system/local/inputs.conf`:
 ```ini
 [monitor:///var/log/syslog]
 disabled = 0
-sourcetype = syslog
+index = main
+sourcetype = linux_sysmon_xml
 ```
 
 <h2 align="center">Data Normalization</h2>
