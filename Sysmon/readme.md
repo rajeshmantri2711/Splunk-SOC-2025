@@ -100,7 +100,7 @@ renderXml = 1
 <h3 align="center">Linux Data Flow</h3>
 
 Sysmon writes to the standard syslog.
-Add this to `inputs.conf`:
+Add this to `/opt/splunkforwarder/etc/system/local/inputs.conf`:
 
 ```ini
 [monitor:///var/log/syslog]
