@@ -128,6 +128,7 @@ index=* ( sourcetype=linux_sysmon_xml OR sourcetype=XmlWinEventLog )
 | eval image=coalesce(Image, image)
 | eval command=coalesce(CommandLine, command)
 | table _time host EventID image command
+| sort -_time
 ```
 - [output](Images/Normalized_output.png)
 
