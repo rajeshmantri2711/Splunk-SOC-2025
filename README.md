@@ -14,9 +14,9 @@ The objective was to build a complete telemetry lifecycle from log generation on
 
 | Role           | OS               | Components / Services |
 |----------------|------------------|------------------------|
-| **Central Server** | Ubuntu 22.04 LTS | Splunk Enterprise (Indexer/Search Head)<br>Velociraptor Server<br>Caldera C2 Server |
-| **Linux Agent**    | Linux Mint       | Splunk Universal Forwarder<br>Sysmon for Linux<br>Suricata (NIDS)<br>Velociraptor Client<br>Caldera Agent (Sandcat)  |
-| **Windows Agent**  | Windows 10 LTS   | Splunk Universal Forwarder<br>Sysmon (SwiftOnSecurity Config)<br>Suricata (NIDS)<br>Velociraptor Client<br>Caldera Agent (Sandcat) |
+| **Central Server** | Oracle 8.10  | Splunk Enterprise<br>Splunk SOAR<br>Caldera C2 Server |
+| **Linux Agent**    | Ubuntu 22.04 LTS       | Splunk Universal Forwarder<br>Sysmon for Linux<br>Suricata (NIDS)<br>Caldera Agent (Sandcat)  |
+| **Windows Agent**  | Windows 10 LTS   | Splunk Universal Forwarder<br>Sysmon (SwiftOnSecurity Config)<br>Suricata (NIDS)<br>Caldera Agent (Sandcat) |
 
 </div>
 
