@@ -56,8 +56,6 @@
           <TargetFilename condition="begin with">/etc/cron</TargetFilename>
         </Rule>
       </FileCreate>
-
-      <ProcessTerminate onmatch="include"/>
     </RuleGroup>
 
   </EventFiltering>
