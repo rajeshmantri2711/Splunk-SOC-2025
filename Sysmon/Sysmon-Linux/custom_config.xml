@@ -3,9 +3,8 @@
 <Sysmon schemaversion="4.81">
   <EventFiltering>
 
-    <!-- ProcessCreate Events -->
     <RuleGroup name="ProcessCreateRules" groupRelation="or">
-      <!-- Exclude noisy background processes -->
+
       <ProcessCreate onmatch="exclude">
         <Image condition="contains">splunkd</Image>
         <CommandLine condition="contains">/opt/splunkforwarder</CommandLine>
@@ -15,10 +14,11 @@
         <CommandLine condition="contains">dbus-daemon</CommandLine>
         <CommandLine condition="contains">apt.systemd.daily</CommandLine>
         <CommandLine condition="contains">run-parts</CommandLine>
+        <Image condition="end with">/usr/bin/sysmon</Image>
       </ProcessCreate>
 
-      <!-- Include shell and scripting commands -->
       <ProcessCreate onmatch="include">
+
         <Rule name="T1059.004: Unix Shell" groupRelation="or">
           <Image condition="end with">/bin/bash</Image>
           <Image condition="end with">/bin/sh</Image>
@@ -28,33 +28,77 @@
         <Rule name="T1105: Ingress Tool Transfer" groupRelation="or">
           <Image condition="end with">wget</Image>
           <Image condition="end with">curl</Image>
+          <Image condition="end with">scp</Image>
+          <Image condition="end with">ftp</Image>
+          <Image condition="end with">tftp</Image>
+        </Rule>
+
+        <Rule name="T1003: Credential Dumping Tools" groupRelation="or">
+            <Image condition="end with">mimipenguin</Image>
+            <Image condition="end with">gdb</Image> </Rule>
+
+        <Rule name="T1059: Interpreters and Compilers">
+             <Image condition="end with">python</Image>
+             <Image condition="end with">python3</Image>
+             <Image condition="end with">perl</Image>
+             <Image condition="end with">gcc</Image>
+             <Image condition="end with">g++</Image>
+             <Image condition="end with">make</Image>
         </Rule>
 
         <Rule name="T1033: User Discovery">
           <CommandLine condition="contains">whoami</CommandLine>
           <CommandLine condition="contains">id</CommandLine>
+          <CommandLine condition="contains">cat /etc/passwd</CommandLine>
+        </Rule>
+
+        <Rule name="T1070: Indicator Removal on Host">
+            <CommandLine condition="contains">rm -rf</CommandLine>
+            <CommandLine condition="contains">shred</CommandLine>
+            <CommandLine condition="contains">history -c</CommandLine>
         </Rule>
       </ProcessCreate>
     </RuleGroup>
 
-    <!-- NetworkConnect Events (deduplicated per process) -->
     <RuleGroup name="NetworkConnectRules" groupRelation="or">
-      <!-- Only include the first network connection per process -->
       <NetworkConnect onmatch="include">
+
+        <Rule name="T1059: Suspicious Shell Connection" groupRelation="or">
+          <Image condition="end with">/bin/bash</Image>
+          <Image condition="end with">/bin/sh</Image>
+          <Image condition="end with">/bin/dash</Image>
+          <Image condition="contains">python</Image>
+          <Image condition="contains">perl</Image>
+        </Rule>
+
         <Rule name="T1105: Ingress Tool Transfer" groupRelation="or">
           <Image condition="end with">wget</Image>
           <Image condition="end with">ssh</Image>
           <Image condition="end with">curl</Image>
+          <Image condition="end with">nc</Image>
+          <Image condition="end with">ncat</Image>
+          <Image condition="end with">netcat</Image>
+          <Image condition="end with">socat</Image>
         </Rule>
       </NetworkConnect>
     </RuleGroup>
 
-    <!-- Optional FileCreate / ProcessTerminate -->
-    <RuleGroup name="FileAndTerminateRules" groupRelation="or">
+    <RuleGroup name="FileCreateRules" groupRelation="or">
       <FileCreate onmatch="include">
-        <Rule name="T1053.003: Scheduled Task/Job - Cron">
+
+        <Rule name="T1053.003: Scheduled Task - Cron">
           <TargetFilename condition="begin with">/etc/cron</TargetFilename>
         </Rule>
+
+        <Rule name="T1098.004: SSH Persistence">
+           <TargetFilename condition="end with">authorized_keys</TargetFilename>
+        </Rule>
+
+        <Rule name="T1548: Sudoers/Group Mod">
+           <TargetFilename condition="begin with">/etc/sudoers</TargetFilename>
+           <TargetFilename condition="begin with">/etc/group</TargetFilename>
+        </Rule>
+
       </FileCreate>
     </RuleGroup>
 
