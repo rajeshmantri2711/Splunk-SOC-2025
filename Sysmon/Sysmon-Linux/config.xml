@@ -1,46 +1,151 @@
 <Sysmon schemaversion="4.81">
   <EventFiltering>
-    
+    <!-- Event ID 1 == ProcessCreate -->
     <RuleGroup name="" groupRelation="or">
-      <ProcessCreate onmatch="exclude">
-        <Image condition="contains">splunkd</Image>
-        <Image condition="contains">splunk-optimize</Image>
-        <Image condition="end with">/splunk</Image>
-        <CommandLine condition="contains">/opt/splunkforwarder</CommandLine>
-
-        <Image condition="contains">mintUpdate</Image>
-        <Image condition="contains">cinnamon</Image>
-        <Image condition="end with">/vmtoolsd</Image>
-        <CommandLine condition="contains">cinnamon-screensaver</CommandLine>
-        <CommandLine condition="contains">GIO_LAUNCHED_DESKTOP</CommandLine>
-        <CommandLine condition="contains">dbus-daemon</CommandLine>
-        
-        <Image condition="end with">/cron</Image>
-        <Image condition="end with">/anacron</Image>
-        <CommandLine condition="contains">apt.systemd.daily</CommandLine>
-        <CommandLine condition="contains">run-parts</CommandLine>
-        <CommandLine condition="contains">loginctl</CommandLine>
-        <CommandLine condition="contains">dpkg_lock_check</CommandLine>
-        
-        <CommandLine condition="contains">lesspipe</CommandLine>
-        <CommandLine condition="contains">mesg n</CommandLine>
-        <CommandLine condition="contains">sed -e</CommandLine>
-        <CommandLine condition="contains">dircolors</CommandLine>
+      <ProcessCreate onmatch="include">
+        <Rule name="ID=T1021.004,Name=Remote Services: SSH" groupRelation="and">
+          <Image condition="end with">ssh</Image>
+          <CommandLine condition="contains">ConnectTimeout=</CommandLine>
+          <CommandLine condition="contains">BatchMode=yes</CommandLine>
+          <CommandLine condition="contains">StrictHostKeyChecking=no</CommandLine>
+          <CommandLine condition="contains any">wget;curl</CommandLine>
+        </Rule>
+        <Rule name="ID=T1027.001,Name=Obfuscated Files or Information: Binary Padding" groupRelation="and">
+          <Image condition="is">/bin/dd</Image>
+          <CommandLine condition="contains all">dd;if=</CommandLine>
+        </Rule>
+        <Rule name="ID=T1033,Name=System Owner/User Discovery" groupRelation="or">
+          <CommandLine condition="contains">/var/run/utmp</CommandLine>
+          <CommandLine condition="contains">/var/log/btmp</CommandLine>
+          <CommandLine condition="contains">/var/log/wtmp</CommandLine>
+          <CommandLine condition="contains">whoami</CommandLine>
+        </Rule>
+        <Rule name="ID=T1053.003,Name=Scheduled Task/Job: Cron" groupRelation="or">
+          <Image condition="end with">crontab</Image>
+        </Rule>
+        <Rule name="ID=T1059.004,Name=Command and Scripting Interpreter: Unix Shell" groupRelation="or">
+          <Image condition="end with">/bin/bash</Image>
+          <Image condition="end with">/bin/dash</Image>
+          <Image condition="end with">/bin/sh</Image>
+        </Rule>
+        <Rule name="ID=T1070.006,Name=Indicator Removal on Host: Timestomp" groupRelation="and">
+          <Image condition="is">/bin/touch</Image>
+          <CommandLine condition="contains any">-r;--reference;-t;--time</CommandLine>
+        </Rule>
+        <Rule name="ID=T1087.001,Name=Account Discovery: Local Account" groupRelation="or">
+          <CommandLine condition="contains">/etc/passwd</CommandLine>
+          <CommandLine condition="contains">/etc/sudoers</CommandLine>
+        </Rule>
+        <Rule name="ID=T1105,Name=Ingress Tool Transfer" groupRelation="or">
+          <Image condition="end with">wget</Image>
+          <Image condition="end with">curl</Image>
+          <Image condition="end with">ftpget</Image>
+          <Image condition="end with">tftp</Image>
+          <Image condition="end with">lwp-download</Image>
+        </Rule>
+        <Rule name="ID=T1123,Name=Audio Capture" groupRelation="and">
+          <Image condition="contains">/bin/aplay</Image>
+          <CommandLine condition="contains">arecord</CommandLine>
+        </Rule>
+        <Rule name="ID=T1136.001,Name=Create Account: Local Account" groupRelation="or">
+          <Image condition="end with">useradd</Image>
+          <Image condition="end with">adduser</Image>
+        </Rule>
+        <Rule name="ID=T1203,Name=Exploitation for Client Execution" groupRelation="and">
+          <User condition="is">root</User>
+          <LogonId condition="is">0</LogonId>
+          <CurrentDirectory condition="is">/var/opt/microsoft/scx/tmp</CurrentDirectory>
+          <CommandLine condition="contains">/bin/sh</CommandLine>
+        </Rule>
+        <Rule name="ID=T1485,Name=Data Destruction" groupRelation="and">
+          <Image condition="is">/bin/dd</Image>
+          <CommandLine condition="contains all">dd;of=;if=</CommandLine>
+          <CommandLine condition="contains any">if=/dev/zero;if=/dev/null</CommandLine>
+        </Rule>
+        <Rule name="ID=T1505.003,Name=Server Software Component: Web Shell" groupRelation="and">
+          <Image condition="contains any">whoami;ifconfig;/usr/bin/ip;/bin/uname</Image>
+          <ParentImage condition="contains any">httpd;lighttpd;nginx;apache2;node;dash</ParentImage>
+        </Rule>
+        <Rule name="ID=T1543.002,Name=Create or Modify System Process: Systemd Service" groupRelation="or">
+          <Image condition="end with">systemd</Image>
+        </Rule>
+        <Rule name="ID=T1548.001,Name=Abuse Elevation Control Mechanism: Setuid and Setgid" groupRelation="or">
+          <Image condition="end with">chmod</Image>
+          <Image condition="end with">chown</Image>
+          <Image condition="end with">fchmod</Image>
+          <Image condition="end with">fchmodat</Image>
+          <Image condition="end with">fchown</Image>
+          <Image condition="end with">fchownat</Image>
+          <Image condition="end with">fremovexattr</Image>
+          <Image condition="end with">fsetxattr</Image>
+          <Image condition="end with">lchown</Image>
+          <Image condition="end with">lremovexattr</Image>
+          <Image condition="end with">lsetxattr</Image>
+          <Image condition="end with">removexattr</Image>
+          <Image condition="end with">setuid</Image>
+          <Image condition="end with">setgid</Image>
+          <Image condition="end with">setreuid</Image>
+          <Image condition="end with">setregid</Image>
+        </Rule>
       </ProcessCreate>
     </RuleGroup>
-
+    <!-- Event ID 3 == NetworkConnect Detected -->
     <RuleGroup name="" groupRelation="or">
       <NetworkConnect onmatch="include">
-        <Image condition="end with">curl</Image>
-        <Image condition="end with">wget</Image>
-        <Image condition="end with">nc</Image>
-        <Image condition="end with">netcat</Image>
-        <Image condition="end with">ncat</Image>
-        <Image condition="end with">ssh</Image>
-        <Image condition="end with">python</Image>
-        <Image condition="end with">python3</Image>
+        <Rule name="ID=T1105,Name=Ingress Tool Transfer" groupRelation="or">
+          <Image condition="end with">wget</Image>
+          <Image condition="end with">curl</Image>
+          <Image condition="end with">ftpget</Image>
+          <Image condition="end with">tftp</Image>
+          <Image condition="end with">lwp-download</Image>
+        </Rule>
       </NetworkConnect>
     </RuleGroup>
-
+    <!-- Event ID 5 == ProcessTerminate -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTerminate onmatch="include" />
+    </RuleGroup>
+    <!-- Event ID 9 == RawAccessRead -->
+    <RuleGroup name="" groupRelation="or">
+      <RawAccessRead onmatch="include" />
+    </RuleGroup>
+    <!-- Event ID 11 == FileCreate -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreate onmatch="include">
+        <Rule name="ID=T1037,Name=Boot or Logon Initialization Scripts" groupRelation="or">
+          <TargetFilename condition="begin with">/etc/init/</TargetFilename>
+          <TargetFilename condition="begin with">/etc/init.d/</TargetFilename>
+          <TargetFilename condition="begin with">/etc/rc.d/</TargetFilename>
+        </Rule>
+        <Rule name="ID=T1053.003,Name=Scheduled Task/Job: Cron" groupRelation="or">
+          <TargetFilename condition="is">/etc/cron.allow</TargetFilename>
+          <TargetFilename condition="is">/etc/cron.deny</TargetFilename>
+          <TargetFilename condition="is">/etc/crontab</TargetFilename>
+          <TargetFilename condition="begin with">/etc/cron.d/</TargetFilename>
+          <TargetFilename condition="begin with">/etc/cron.daily/</TargetFilename>
+          <TargetFilename condition="begin with">/etc/cron.hourly/</TargetFilename>
+          <TargetFilename condition="begin with">/etc/cron.monthly/</TargetFilename>
+          <TargetFilename condition="begin with">/etc/cron.weekly/</TargetFilename>
+          <TargetFilename condition="begin with">/var/spool/cron/crontabs/</TargetFilename>
+        </Rule>
+        <Rule name="ID=T1105,Name=Ingress Tool Transfer" groupRelation="or">
+          <Image condition="end with">wget</Image>
+          <Image condition="end with">curl</Image>
+          <Image condition="end with">ftpget</Image>
+          <Image condition="end with">tftp</Image>
+          <Image condition="end with">lwp-download</Image>
+        </Rule>
+        <Rule name="ID=T1543.002,Name=Create or Modify System Process: Systemd Service" groupRelation="or">
+          <TargetFilename condition="begin with">/etc/systemd/system</TargetFilename>
+          <TargetFilename condition="begin with">/usr/lib/systemd/system</TargetFilename>
+          <TargetFilename condition="begin with">/run/systemd/system/</TargetFilename>
+          <TargetFilename condition="contains">/systemd/user/</TargetFilename>
+        </Rule>
+      </FileCreate>
+    </RuleGroup>
+    <!--Event ID 23 == FileDelete -->
+    <RuleGroup name="" groupRelation="or">
+      <FileDelete onmatch="include" />
+    </RuleGroup>
   </EventFiltering>
 </Sysmon>
